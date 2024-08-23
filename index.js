@@ -104,6 +104,13 @@ const uploadLimiter = new RateLimit({
 });
 app.use('/upload', uploadLimiter);
 
+// Apply rate limiting to the route "/alter-table"
+const alterTableLimiter = new RateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // max 100 requests per windowMs
+});
+app.use('/alter-table', alterTableLimiter);
+
 // Start the server
 const port = 3000;
 app.listen(port, () => {
