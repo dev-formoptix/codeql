@@ -4,6 +4,7 @@ const pgp = require('pg-promise')();
 const multer = require('multer');
 const path = require('path');
 const { escape } = require('escape-html'); // import the escape-html function
+const RateLimit = require('express-rate-limit');
 
 // Database connection configuration
 const db = pgp({
@@ -95,6 +96,13 @@ app.post('/upload', (req, res) => {
         }
     });
 });
+
+// Apply rate limiting to all routes
+const limiter = new RateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // max 100 requests per windowMs
+});
+app.use(limiter);
 
 // Start the server
 const port = 3000;
