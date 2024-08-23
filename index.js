@@ -3,6 +3,7 @@ const { exec } = require('child_process');
 const mysql = require('mysql');
 const app = express();
 const port = 3000;
+const RateLimit = require('express-rate-limit');
 
 // Sample MySQL connection setup
 const connection = mysql.createConnection({
@@ -43,6 +44,15 @@ app.get('/redirect', (req, res) => {
     const target = req.query.url;
     res.redirect(target);
 });
+
+// Rate limiting middleware
+const limiter = RateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // max 100 requests per windowMs
+});
+
+// Apply rate limiter to all requests
+app.use(limiter);
 
 app.listen(port, () => {
     console.log(`App running on port ${port}`);
