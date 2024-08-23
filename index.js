@@ -3,6 +3,9 @@ const bodyParser = require('body-parser');
 const pgp = require('pg-promise')();
 const multer = require('multer');
 const path = require('path');
+const { escape } = require('escape-html'); // import the escape-html function
+const RateLimit = require('express-rate-limit');
+
 // Database connection configuration
 const db = pgp({
     host: 'localhost',
@@ -46,6 +49,7 @@ app.post('/alter-table', async (req, res) => {
         res.status(500).send('Error altering table');
     }
 });
+
 const storage = multer.diskStorage({
     destination: './uploads/',
     filename: function (req, file, cb) {
@@ -87,11 +91,19 @@ app.post('/upload', (req, res) => {
             if (req.file == undefined) {
                 res.status(400).send('No file selected!');
             } else {
-                res.send(`File uploaded: ${req.file.filename}`);
+                res.send(`File uploaded: ${escape(req.file.filename)}`); // Sanitize the user-provided value
             }
         }
     });
 });
+
+// Apply rate limiting to all routes
+const limiter = new RateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // max 100 requests per windowMs
+});
+app.use(limiter);
+
 // Start the server
 const port = 3000;
 app.listen(port, () => {
