@@ -97,12 +97,12 @@ app.post('/upload', (req, res) => {
     });
 });
 
-// Apply rate limiting to all routes
-const limiter = new RateLimit({
+// Apply rate limiting to the route "/upload"
+const uploadLimiter = new RateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // max 100 requests per windowMs
 });
-app.use(limiter);
+app.use('/upload', uploadLimiter);
 
 // Start the server
 const port = 3000;
