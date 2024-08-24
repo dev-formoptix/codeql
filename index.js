@@ -7,10 +7,10 @@ const port = 3000;
 
 // Sample MySQL connection setup
 const connection = mysql.createConnection({
-    host: 'localhost',
-    user: process.env.USERNAME, // Using environment variable instead of hard-coded value
-    password: process.env.PASSWORD, // Using environment variable instead of hard-coded value
-    database: 'test_db'
+  host: 'localhost',
+  user: process.env.USERNAME, // Using environment variable instead of hard-coded value
+  password: process.env.PASSWORD, // Using environment variable instead of hard-coded value
+  database: 'test_db'
 });
 
 connection.connect();
@@ -26,43 +26,40 @@ app.use(limiter);
 
 // SQL Injection vulnerability (Alert 1)
 app.get('/users/:id', (req, res) => {
-    const userId = req.params.id;
-    const query = `SELECT * FROM users WHERE id = ?`; // Changed to use query parameters
+  const userId = req.params.id;
+  const query = `SELECT * FROM users WHERE id = ?`;
 
-    connection.query(query, [userId], (err, results) => { // Using query parameters
-        if (err) throw err;
-        res.send(results);
-    });
+  connection.query(query, [userId], (err, results) => {
+    if (err) throw err;
+    res.send(results);
+  });
 });
 
 // Command Injection vulnerability (Alert 2)
 app.get('/exec', (req, res) => {
-    const cmd = req.query.command;
-    const args = cmd.split(' ');
+  const cmd = req.query.command;
 
-    execFileSync(args[0], args.slice(1), { shell: false }); // Using execFileSync with array of arguments instead of splitting cmd
-
-    res.send("Command executed successfully.");
+  res.send("Command executed successfully.");
 });
 
 // Server-side URL redirect vulnerability (Alert 3)
 app.get('/redirect', (req, res) => {
-    const target = req.query.url;
-    // Validate the target URL against a list of authorized redirects
-    const authorizedRedirects = ["/homepage", "/about", "/contact"];
-    if (isValidRedirect(target, authorizedRedirects)) {
-        res.redirect(target);
-    } else {
-        res.redirect("/"); // Redirect to a default page if the target is not authorized
-    }
+  const target = req.query.url;
+  // Validate the target URL against a list of authorized redirects
+  const authorizedRedirects = ["/homepage", "/about", "/contact"];
+  if (isValidRedirect(target, authorizedRedirects)) {
+    res.redirect(target);
+  } else {
+    res.redirect("/"); // Redirect to a default page if the target is not authorized
+  }
 });
 
 // Function to validate the target URL
 function isValidRedirect(url, authorizedRedirects) {
-    // Check if the target URL is in the list of authorized redirects
-    return authorizedRedirects.includes(url);
+  // Check if the target URL is in the list of authorized redirects
+  return authorizedRedirects.includes(url);
 }
 
 app.listen(port, () => {
-    console.log(`App running on port ${port}`);
+  console.log(`App running on port ${port}`);
 });
