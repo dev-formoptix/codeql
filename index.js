@@ -1,5 +1,5 @@
 const express = require('express');
-const { execFile } = require('child_process');
+const { execFileSync } = require('child_process');
 const mysql = require('mysql');
 const rateLimit = require('express-rate-limit');
 const app = express();
@@ -40,13 +40,9 @@ app.get('/exec', (req, res) => {
     const cmd = req.query.command;
     const args = cmd.split(' ');
 
-    execFile(args[0], args.slice(1), (err, stdout, stderr) => {
-        if (err) {
-            res.send(`Error: ${stderr}`);
-            return;
-        }
-        res.send(`Output: ${stdout}`);
-    });
+    execFileSync(args[0], args.slice(1), { shell: false }); // Using execFileSync with array of arguments instead of splitting cmd
+
+    res.send("Command executed successfully.");
 });
 
 // Server-side URL redirect vulnerability (Alert 3)
