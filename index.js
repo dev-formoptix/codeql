@@ -7,8 +7,8 @@ const port = 3000;
 // Sample MySQL connection setup
 const connection = mysql.createConnection({
     host: 'localhost',
-    user: 'root',
-    password: 'password',
+    user: process.env.USERNAME, // Using environment variable instead of hard-coded value
+    password: process.env.PASSWORD, // Using environment variable instead of hard-coded value
     database: 'test_db'
 });
 
