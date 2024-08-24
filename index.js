@@ -1,10 +1,11 @@
 ```javascript
 const express = require('express');
-const { execFile } = require('child_process');
+const { execFileSync } = require('child_process');
 const mysql = require('mysql');
 const rateLimit = require('express-rate-limit');
 const app = express();
 const port = 3000;
+const shellQuote = require('shell-quote');
 
 // Sample MySQL connection setup
 const connection = mysql.createConnection({
@@ -39,9 +40,9 @@ app.get('/users/:id', (req, res) => {
 // Command Injection vulnerability (Alert 2)
 app.get('/exec', (req, res) => {
     const cmd = req.query.command;
-    const args = cmd.split(' ');
+    const args = shellQuote.parse(cmd);
 
-    execFile(args[0], args.slice(1), (err, stdout, stderr) => {
+    execFileSync(args[0], args.slice(1), (err, stdout, stderr) => {
         if (err) {
             res.send(`Error: ${stderr}`);
             return;
@@ -67,4 +68,4 @@ app.listen(port, () => {
 });
 ```
 
-In the updated code, the hard-coded username and password in the MySQL connection configuration are replaced with environment variables `DB_USER` and `DB_PASSWORD`, respectively. This ensures that the credentials are not hard-coded in the source code and can be set externally.
+In the updated code, the `execFile` function is replaced with `execFileSync` to prevent uncontrolled command line execution. The `cmd` value from the query parameter is parsed using the `shell-quote` library to ensure safe execution of the command.
