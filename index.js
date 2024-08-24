@@ -17,9 +17,9 @@ connection.connect();
 // SQL Injection vulnerability (Alert 1)
 app.get('/users/:id', (req, res) => {
     const userId = req.params.id;
-    const query = `SELECT * FROM users WHERE id = ${userId}`;
+    const query = `SELECT * FROM users WHERE id = ?`; // Changed to use query parameters
     
-    connection.query(query, (err, results) => {
+    connection.query(query, [userId], (err, results) => { // Using query parameters
         if (err) throw err;
         res.send(results);
     });
@@ -41,7 +41,7 @@ app.get('/exec', (req, res) => {
 // Unvalidated redirect (Alert 3)
 app.get('/redirect', (req, res) => {
     const target = req.query.url;
-    res.redirect(target);
+    res.redirect(encodeURI(target)); // Encoded the URL before redirecting
 });
 
 app.listen(port, () => {
