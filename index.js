@@ -1,4 +1,3 @@
-```javascript
 const express = require('express');
 const { execFileSync } = require('child_process');
 const mysql = require('mysql');
@@ -19,8 +18,8 @@ connection.connect();
 
 // Create rate limiter middleware
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // max 100 requests per windowMs
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // max 100 requests per windowMs
 });
 
 // Apply rate limiter middleware to all requests
@@ -43,7 +42,7 @@ app.get('/exec', (req, res) => {
     const args = shellQuote.parse(cmd);
 
     execFileSync(args[0], args.slice(1));
-  
+
     res.send(`Command executed successfully.`);
 });
 
@@ -62,6 +61,3 @@ app.get('/redirect', (req, res) => {
 app.listen(port, () => {
     console.log(`App running on port ${port}`);
 });
-```
-
-In the updated code, the `execFile` function has been replaced with `execFileSync` to prevent uncontrolled command line execution. The `cmd` value from the query parameter is parsed using the `shell-quote` library to ensure safe execution of the command.
