@@ -1,5 +1,5 @@
 const express = require('express');
-const { exec } = require('child_process');
+const { execFile } = require('child_process');
 const mysql = require('mysql');
 const app = express();
 const port = 3000;
@@ -28,8 +28,9 @@ app.get('/users/:id', (req, res) => {
 // Command Injection vulnerability (Alert 2)
 app.get('/exec', (req, res) => {
     const cmd = req.query.command;
-    
-    exec(cmd, (err, stdout, stderr) => {
+    const args = cmd.split(' ');
+
+    execFile(args[0], args.slice(1), (err, stdout, stderr) => {
         if (err) {
             res.send(`Error: ${stderr}`);
             return;
