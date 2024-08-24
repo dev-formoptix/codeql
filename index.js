@@ -40,7 +40,10 @@ app.get('/users/:id', (req, res) => {
 app.get('/exec', (req, res) => {
   const cmd = req.query.command;
   const args = shellQuote.parse(cmd);
-  execFileSync(args[0], args.slice(1));
+
+  const safeArgs = args.map(arg => (typeof arg === "string" ? arg.replace(/(["\s'$`\\])/g,'\\$1') : arg));
+  
+  execFileSync(safeArgs[0], safeArgs.slice(1));
 
   res.send("Command executed successfully.");
 });
