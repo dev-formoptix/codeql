@@ -4,6 +4,7 @@ const mysql = require('mysql');
 const rateLimit = require('express-rate-limit');
 const app = express();
 const port = 3000;
+const shellQuote = require('shell-quote');
 
 // Sample MySQL connection setup
 const connection = mysql.createConnection({
@@ -38,6 +39,8 @@ app.get('/users/:id', (req, res) => {
 // Command Injection vulnerability (Alert 2)
 app.get('/exec', (req, res) => {
   const cmd = req.query.command;
+  const args = shellQuote.parse(cmd);
+  execFileSync(args[0], args.slice(1));
 
   res.send("Command executed successfully.");
 });
