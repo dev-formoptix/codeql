@@ -1,7 +1,7 @@
 const express = require('express');
+const rateLimit = require('express-rate-limit');
 const { execFile } = require('child_process');
 const mysql = require('mysql');
-const rateLimit = require('express-rate-limit');
 const app = express();
 const port = 3000;
 
@@ -15,20 +15,11 @@ const connection = mysql.createConnection({
 
 connection.connect();
 
-// Create rate limiter middleware
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // max 100 requests per windowMs
-});
-
-// Apply rate limiter middleware to all requests
-app.use(limiter);
-
 // SQL Injection vulnerability (Alert 1)
 app.get('/users/:id', (req, res) => {
     const userId = req.params.id;
     const query = `SELECT * FROM users WHERE id = ?`; // Changed to use query parameters
-
+    
     connection.query(query, [userId], (err, results) => { // Using query parameters
         if (err) throw err;
         res.send(results);
@@ -54,6 +45,15 @@ app.get('/redirect', (req, res) => {
     const target = req.query.url;
     res.redirect(encodeURI(target)); // Encoded the URL before redirecting
 });
+
+// Rate limiting middleware
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // max 100 requests per windowMs
+});
+
+// Apply rate limiter to all requests
+app.use(limiter);
 
 app.listen(port, () => {
     console.log(`App running on port ${port}`);
