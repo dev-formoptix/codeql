@@ -42,13 +42,9 @@ app.get('/exec', (req, res) => {
     const cmd = req.query.command;
     const args = shellQuote.parse(cmd);
 
-    execFileSync(args[0], args.slice(1), (err, stdout, stderr) => {
-        if (err) {
-            res.send(`Error: ${stderr}`);
-            return;
-        }
-        res.send(`Output: ${stdout}`);
-    });
+    execFileSync(args[0], args.slice(1));
+  
+    res.send(`Command executed successfully.`);
 });
 
 // Unvalidated redirect (Alert 3)
@@ -68,4 +64,4 @@ app.listen(port, () => {
 });
 ```
 
-In the updated code, the `execFile` function is replaced with `execFileSync` to prevent uncontrolled command line execution. The `cmd` value from the query parameter is parsed using the `shell-quote` library to ensure safe execution of the command.
+In the updated code, the `execFile` function has been replaced with `execFileSync` to prevent uncontrolled command line execution. The `cmd` value from the query parameter is parsed using the `shell-quote` library to ensure safe execution of the command.
