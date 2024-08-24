@@ -1,5 +1,3 @@
-Here is the updated code with the hard-coded credential vulnerability fixed:
-
 ```javascript
 const express = require('express');
 const { execFile } = require('child_process');
@@ -11,8 +9,8 @@ const port = 3000;
 // Sample MySQL connection setup
 const connection = mysql.createConnection({
     host: 'localhost',
-    user: process.env.DB_USER, // Using environment variable instead of hard-coded value
-    password: process.env.DB_PASSWORD, // Using environment variable instead of hard-coded value
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
     database: 'test_db'
 });
 
@@ -30,9 +28,9 @@ app.use(limiter);
 // SQL Injection vulnerability (Alert 1)
 app.get('/users/:id', (req, res) => {
     const userId = req.params.id;
-    const query = `SELECT * FROM users WHERE id = ?`; // Changed to use query parameters
+    const query = `SELECT * FROM users WHERE id = ?`;
 
-    connection.query(query, [userId], (err, results) => { // Using query parameters
+    connection.query(query, [userId], (err, results) => {
         if (err) throw err;
         res.send(results);
     });
