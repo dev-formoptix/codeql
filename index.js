@@ -53,7 +53,7 @@ app.get('/redirect', (req, res) => {
   const target = req.query.url;
   // Validate the target URL against a list of authorized redirects
   const authorizedRedirects = ["/homepage", "/about", "/contact"];
-  if (isValidRedirect(target, authorizedRedirects)) {
+  if (isAuthorizedRedirect(target, authorizedRedirects)) {
     res.redirect(target);
   } else {
     res.redirect("/"); // Redirect to a default page if the target is not authorized
@@ -61,7 +61,7 @@ app.get('/redirect', (req, res) => {
 });
 
 // Function to validate the target URL
-function isValidRedirect(url, authorizedRedirects) {
+function isAuthorizedRedirect(url, authorizedRedirects) {
   // Check if the target URL is in the list of authorized redirects
   return authorizedRedirects.includes(url);
 }
